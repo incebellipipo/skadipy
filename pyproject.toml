@@ -1,0 +1,28 @@
+[build-system]
+# requires = ["hatchling", "hatch-vcs"]
+# build-backend = "hatchling.build"
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "skadipy"
+authors = [
+  { name="Emir Cem Gezer", email="emir.cem.gezer@ntnu.no"}
+]
+description = "A python package for Marine Vehicle Control"
+readme = "README.md"
+requires-python = ">=3.8"
+dynamic = ["version", "dependencies"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+]
+urls = { "Source Code" = "https://github.com/incebellipipo/skadipy" }
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools_scm]
+version_file = "src/skadipy/__version__.py"
+version_scheme = 'post-release'
