@@ -54,3 +54,7 @@ A python library for solving the control allocation problem for marine craft wit
 - `notebooks`: Jupyter notebooks for the library showing examples and documentation.
 - `docs`: Documentation for the library
 - `bin`: Scripts for running the library
+
+## Acknowledgements
+
+Work funded by the Research Council of Norway (RCN) through NTNU AMOS (RCN project 223254), SFI AutoShip (RCN project 309230), and the Polish National Centre for Research and Development through the ENDURE project (NOR/POLNOR/ENDURE/0019/2019-00).
