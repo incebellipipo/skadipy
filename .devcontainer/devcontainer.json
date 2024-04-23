@@ -1,0 +1,4 @@
+// Write a devcontainer using the Dockerfile in the root of the repository
+{
+    "dockerFile": "../devcontainer.dockerfile"
+}
