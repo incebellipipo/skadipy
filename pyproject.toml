@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=64", "setuptools_scm>=8"]
+requires = ["setuptools>=64", "setuptools_scm>=8", "wheel"]
 build-backend = "setuptools.build_meta"
 
 
@@ -24,3 +24,6 @@ dependencies = {file = ["requirements.txt"]}
 [tool.setuptools_scm]
 version_file = "src/skadipy/__version__.py"
 version_scheme = 'post-release'
+
+[tool.setuptools.packages.find]
+where = ["src"]

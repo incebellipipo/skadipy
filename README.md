@@ -6,8 +6,20 @@ A python library for solving the control allocation problem for marine craft wit
 
 ## Installation
 
+### Pip
 
+1. Install the package using git from the master branch using
 
+    ```bash
+    pip install git+https://github.com/incebellipipo/skadipy.git@master
+    ```
+
+2. Test the installation
+    ```bash
+    python -c "import skadipy; print(skadipy.__version__)"
+    ```
+
+### Virtual Environment
 1. Clone the package and create a virtual environment.
     ```bash
     python -m venv venv
