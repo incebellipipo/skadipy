@@ -16,7 +16,10 @@
 
 import typing
 import numpy as np
+import scipy
 
+
+from ... import toolbox
 from ... import safety
 from ... import allocator
 from ... import actuator
@@ -57,6 +60,9 @@ class ReferenceFilterBase(allocator.AllocatorBase):
 
         # Zeta, regularization parameter
         self._zeta = zeta
+
+        # B matrix
+        self._b_matrix_weighted_inverse = None
 
         # Q matrix, nullspace of B
         self._q_matrix = None
@@ -143,3 +149,18 @@ class ReferenceFilterBase(allocator.AllocatorBase):
 
         # kappa := xi_dot
         return kappa
+
+    def compute_configuration_matrix(self) -> None:
+        super().compute_configuration_matrix()
+
+        # Indices for degrees of freedom
+        dof_indices = [i.value for i in self.force_torque_components]
+
+        # Prepare the required variables
+        b_matrix = self._b_matrix[dof_indices, :]
+        w_matrix = self._w_matrix
+        self._b_matrix_weighted_inverse = toolbox.weighted_pseudo_inverse(
+            matrix=b_matrix, weights=w_matrix)
+
+        # Nullspace of B, $Q \in \mathcal{N}(B)$
+        self._q_matrix = scipy.linalg.null_space(b_matrix)

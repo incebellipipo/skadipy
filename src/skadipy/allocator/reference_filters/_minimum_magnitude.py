@@ -73,26 +73,16 @@ class MinimumMagnitude(ReferenceFilterBase):
         # Indices for degrees of freedom
         dof_indices = [i.value for i in self.force_torque_components]
 
-        # Prepare the required variables
-        b_matrix = self._b_matrix[dof_indices, :]
-        w_matrix = self._w_matrix
-        b_weighted_inverse = toolbox.weighted_pseudo_inverse(
-            matrix=b_matrix,
-            weights=w_matrix
-        )
-
-        # Nullspace of B, $Q \in \mathcal{N}(B)$
-        self._q_matrix = scipy.linalg.null_space(b_matrix)
 
         if self._theta is None:
             # Initialization of variables
-            n, p = b_matrix.shape
+            n, p = self._b_matrix[dof_indices, :].shape
             q = p - n
             self._theta = np.zeros((q, 1), dtype=np.float32)
 
         if self._xi is None:
             self._xi = np.zeros(
-                (b_matrix.shape[1], 1), dtype=np.float32)
+                (self._b_matrix[dof_indices, :].shape[1], 1), dtype=np.float32)
 
         # if self._tau_previous is None:
             # Initialize the previous tau with zeros
@@ -104,11 +94,11 @@ class MinimumMagnitude(ReferenceFilterBase):
             d_tau = self._derivative_solver(tau) / self._t_s
 
         # Compute the particular solution
-        xi_p = b_weighted_inverse @ tau[dof_indices, :]
+        xi_p = self._b_matrix_weighted_inverse @ tau[dof_indices, :]
 
         # Compute the derivative of particular solution using derivative of
         # requested force
-        d_xi_p = b_weighted_inverse @ d_tau[dof_indices, :]
+        d_xi_p = self._b_matrix_weighted_inverse @ d_tau[dof_indices, :]
 
         # Get the desired allocated forces on the manifold
         xi_d = xi_p + self._q_matrix @ self._theta
