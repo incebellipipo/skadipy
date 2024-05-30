@@ -2,4 +2,4 @@ numpy
 scipy
 shapely
 pyquaternion
-qpsolvers [ open_source_solvers ]
+qpsolvers [ osqp ]
