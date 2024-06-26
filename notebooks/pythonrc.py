@@ -15,6 +15,9 @@ import skadipy.allocator
 import skadipy.toolbox
 import skadipy.safety
 
+
+from IPython.display import Markdown, display
+
 # Importing the necessary modules
 
 # Setting the plot style
@@ -208,7 +211,7 @@ def run_tests(
 def plot_histories(tau_cmd, tau_alloc, indices=[0, 1, 5]):
     labels = [r"$F_x$", r"$F_y$", r"$F_z$", r"$M_x$", r"$M_y$", r"$M_z$"]
 
-    fig, ax = plt.subplots(len(indices), 1, figsize=(8, 6))
+    fig, ax = plt.subplots(len(indices), 1, figsize=(8, 8))
 
     fig.tight_layout(pad=1.5)
 
@@ -243,7 +246,7 @@ def plot_2d_allocation(
     tau_hist: np.ndarray,
 ):
 
-    fig, ax = plt.subplots(2, 1, height_ratios=[4, 1], figsize=(6, 8))
+    fig, ax = plt.subplots(2, 1, height_ratios=[4, 1], figsize=(8, 8))
 
     fig.tight_layout(pad=1.5)
 
@@ -305,18 +308,18 @@ def plot_angles(xi_hist):
     for _, angle in enumerate(angles):
         angle[0:3, 0] = None
 
-    plt.clf()
+    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
     for i, angle in enumerate(angles):
-        plt.plot(np.degrees(angle[:, 0]), color=colors[i])
+        ax.plot(np.degrees(angle[:, 0]), color=colors[i])
 
-    plt.xlabel("Sample [s]")
-    plt.ylabel(r"$\alpha_1$ [Deg]")
-    plt.grid(True)
+    ax.set_xlabel("Sample [s]")
+    ax.set_ylabel(r"$\alpha_1$ [Deg]")
+    ax.grid(True)
 
 
 def plot_thruster_forces(xi_hist):
 
-    fig, ax = plt.subplots(3, 1, figsize=(8, 6))
+    fig, ax = plt.subplots(3, 1, figsize=(8, 8))
 
     fig.tight_layout(pad=1.5)
     for i, xi in enumerate(xi_hist):
@@ -336,9 +339,23 @@ def plot_thruster_forces(xi_hist):
 
 def plot_theta_histories(theta_hist):
 
+    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
     for i in range(theta_hist.shape[0]):
-        plt.plot(theta_hist[i, :, 0], theta_hist[i, :, 1], "-o", color=colors[i])
+        ax.plot(theta_hist[i, :, 0], theta_hist[i, :, 1], "-o", color=colors[i])
 
-    plt.xlabel(r"$\theta_1$", fontdict={"size": 16})
-    plt.ylabel(r"$\theta_2$", fontdict={"size": 16})
-    plt.grid(True)
+    ax.set_xlabel(r"$\theta_1$")
+    ax.set_ylabel(r"$\theta_2$")
+    ax.grid(True)
+
+def generate_markdown_table(gamma, mu, rho, zeta, lambda_p):
+    # Start the table with the header
+    table = r"| | $\gamma$ | $\mu$ | $\rho$ | $\zeta$ | $\lambda_i$ |"
+    table += "\n|--|-------|----|-----|------|----------|\n"
+
+    # Add the rows
+    i = 0
+    for g, m, r, z, l in zip(gamma, mu, rho, zeta, lambda_p):
+        table += f"| Run {i}| {g} | {m} | {r} | {z} | {l} |\n"
+        i += 1
+
+    return table
