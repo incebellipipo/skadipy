@@ -9,7 +9,7 @@ from save_data import *
 import matplotlib.pyplot as plt
 import typing
 
-import skadipy.allocator.reference_filters
+import skadipy.allocator.reference_filters as rf
 import skadipy.actuator
 import skadipy.allocator
 import skadipy.toolbox
@@ -18,81 +18,94 @@ import skadipy.safety
 # Importing the necessary modules
 
 # Setting the plot style
-plt.rcParams['text.usetex'] = True
+plt.rcParams["text.usetex"] = True
+plt.rcParams["mathtext.fontset"] = "stix"
+plt.rcParams["font.family"] = "STIXGeneral"
+
+# Increase the font size for labels
+plt.rcParams.update({"font.size": 18})
+# keep the font size for ticks the same
+plt.rcParams.update({"xtick.labelsize": 10})
+plt.rcParams.update({"ytick.labelsize": 10})
+# keep the font size for legend the same
+plt.rcParams.update({"legend.fontsize": 10})
+
+
+# colors = ["#0072BD", "#EDB120", "#77AC30", "#7E2F8E", "#4DBEEE"]
+# colors = ["C0","C1","C2","C3","C4","C5","C6","C7","C8","C9"]
+# matlab color hex
+colors = [
+    "#0072BD",
+    "#D95319",
+    "#77AC30",
+    "#A2142F",
+    "#4DBEEE",
+    "#EDB120",
+    "#7E2F8E",
+    "#77AC30",
+    "#4DBEEE",
+    "#A2142F",
+]
+
 
 # Creating the vessel
 tunnel = skadipy.actuator.Fixed(
     position=skadipy.toolbox.Point([0.3875, 0.0, 0.0]),
-    orientation=skadipy.toolbox.Quaternion(
-        axis=(0.0, 0.0, 1.0), radians=np.pi / 2.0),
+    orientation=skadipy.toolbox.Quaternion(axis=(0.0, 0.0, 1.0), radians=np.pi / 2.0),
     extra_attributes={
         "rate_limit": 0.1,
         "saturation_limit": 1.0,
-        "limits": [-1.0, 1.0]
-    }
+        "limits": [-1.0, 1.0],
+    },
 )
 voithschneider_port = skadipy.actuator.Azimuth(
     position=skadipy.toolbox.Point([-0.4574, -0.055, 0.0]),
     extra_attributes={
         "rate_limit": 0.1,
         "saturation_limit": 1.0,
-        "reference_angle":  np.pi / 4.0,
-        "limits": [0.0, 1.0]
-    }
+        "reference_angle": np.pi / 4.0,
+        "limits": [0.0, 1.0],
+    },
 )
 voithschneider_starboard = skadipy.actuator.Azimuth(
     position=skadipy.toolbox.Point([-0.4547, 0.055, 0.0]),
     extra_attributes={
         "rate_limit": 0.1,
         "saturation_limit": 1.0,
-        "reference_angle": - np.pi / 4.0,
-        "limits": [0.0, 1.0]
-    }
+        "reference_angle": -np.pi / 4.0,
+        "limits": [0.0, 1.0],
+    },
 )
 
 ma_bow_port = skadipy.actuator.Fixed(
     position=skadipy.toolbox.Point([0.3, -0.1, 0.0]),
     orientation=skadipy.toolbox.Quaternion(
-        axis=(0.0, 0.0, 1.0), angle=(3*np.pi / 4.0)),
-    extra_attributes={
-        "rate_limit": 0.1,
-        "saturation_limit": 1.0,
-        "limits": [0.0, 1.0]
-    }
+        axis=(0.0, 0.0, 1.0), angle=(3 * np.pi / 4.0)
+    ),
+    extra_attributes={"rate_limit": 0.1, "saturation_limit": 1.0, "limits": [0.0, 1.0]},
 )
 ma_bow_starboard = skadipy.actuator.Fixed(
     position=skadipy.toolbox.Point([0.3, 0.1, 0.0]),
     orientation=skadipy.toolbox.Quaternion(
-        axis=(0.0, 0.0, 1.0), angle=(-3*np.pi / 4.0)),
-    extra_attributes={
-        "rate_limit": 0.1,
-        "saturation_limit": 1.0,
-        "limits": [0.0, 1.0]
-    }
+        axis=(0.0, 0.0, 1.0), angle=(-3 * np.pi / 4.0)
+    ),
+    extra_attributes={"rate_limit": 0.1, "saturation_limit": 1.0, "limits": [0.0, 1.0]},
 )
 ma_aft_port = skadipy.actuator.Fixed(
     position=skadipy.toolbox.Point([-0.3, -0.1, 0.0]),
-    orientation=skadipy.toolbox.Quaternion(
-        axis=(0.0, 0.0, 1.0), angle=(np.pi / 4.0)),
-    extra_attributes={
-        "rate_limit": 0.1,
-        "saturation_limit": 1.0,
-        "limits": [0.0, 1.0]
-    }
+    orientation=skadipy.toolbox.Quaternion(axis=(0.0, 0.0, 1.0), angle=(np.pi / 4.0)),
+    extra_attributes={"rate_limit": 0.1, "saturation_limit": 1.0, "limits": [0.0, 1.0]},
 )
 ma_aft_starboard = skadipy.actuator.Fixed(
     position=skadipy.toolbox.Point([-0.3, 0.1, 0.0]),
-    orientation=skadipy.toolbox.Quaternion(
-        axis=(0.0, 0.0, 1.0), angle=(-np.pi / 4.0)),
-    extra_attributes={
-        "rate_limit": 0.1,
-        "saturation_limit": 1.0,
-        "limits": [0.0, 1.0]
-    }
+    orientation=skadipy.toolbox.Quaternion(axis=(0.0, 0.0, 1.0), angle=(-np.pi / 4.0)),
+    extra_attributes={"rate_limit": 0.1, "saturation_limit": 1.0, "limits": [0.0, 1.0]},
 )
 
 
-def generate_spiral_dataset(num_points: int, num_turns: float, k: float = 1.0) -> np.ndarray:
+def generate_spiral_dataset(
+    num_points: int, num_turns: float, k: float = 1.0
+) -> np.ndarray:
     """
     Generate a dataset of points on a spiral.
 
@@ -105,7 +118,15 @@ def generate_spiral_dataset(num_points: int, num_turns: float, k: float = 1.0) -
     return np.column_stack((np.cos(angles) * radii, np.sin(angles) * radii)) * k
 
 
-def gen_clipped_sin(n: int, amplitude: float, period: float, phase: float, offset: float, clip_n: float = -1.0, clip_p: float = 1.0):
+def gen_clipped_sin(
+    n: int,
+    amplitude: float,
+    period: float,
+    phase: float,
+    offset: float,
+    clip_n: float = -1.0,
+    clip_p: float = 1.0,
+):
     """
     Generate a clipped sine wave.
 
@@ -119,11 +140,18 @@ def gen_clipped_sin(n: int, amplitude: float, period: float, phase: float, offse
 
     :return: The clipped sine wave.
     """
-    return np.clip(amplitude * np.sin(np.linspace(0, 2 * np.pi * period, n) + phase) + offset, clip_n, clip_p)
+    return np.clip(
+        amplitude * np.sin(np.linspace(0, 2 * np.pi * period, n) + phase) + offset,
+        clip_n,
+        clip_p,
+    )
 
 
-def run_tests(tau_cmd: np.ndarray = None, d_tau_cmd: np.ndarray = None, allocators: typing.List[
-    skadipy.allocator.AllocatorBase] = None) -> typing.Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def run_tests(
+    tau_cmd: np.ndarray = None,
+    d_tau_cmd: np.ndarray = None,
+    allocators: typing.List[skadipy.allocator.AllocatorBase] = None,
+) -> typing.Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Run the tests for the given allocator and input forces.
 
@@ -159,40 +187,158 @@ def run_tests(tau_cmd: np.ndarray = None, d_tau_cmd: np.ndarray = None, allocato
         for j in range(N):
 
             kwargs = {}
-            kwargs['tau'] = np.reshape(tau_cmd[j], (6, 1))
+            kwargs["tau"] = np.reshape(tau_cmd[j], (6, 1))
             if d_tau_cmd is not None:
-                kwargs['d_tau'] = np.reshape(d_tau_cmd[j], (6, 1))
+                kwargs["d_tau"] = np.reshape(d_tau_cmd[j], (6, 1))
 
             xi, theta = allocator.allocate(**kwargs)
-
-            xi_hist[i, j, :] = xi.flatten()
-            if theta is not None:
-                theta_hist[i, j, :] = theta.flatten()
+            if isinstance(allocator, rf.ReferenceFilterBase):
+                xi_hist[i, j, :] = xi.flatten()
+                if theta is not None:
+                    theta_hist[i, j, :] = theta.flatten()
+                tau_hist[i, j, :] = allocator.allocated.flatten()
+            else:
+                xi_hist[i, j, :] = np.array(xi, dtype=float).flatten()
                 tau_hist[i, j, :] = allocator.allocated.flatten()
 
     # Return the results
     return (xi_hist, theta_hist, tau_hist)
 
+
 def plot_histories(tau_cmd, tau_alloc, indices=[0, 1, 5]):
-    labels = ['X', 'Y', 'Z', 'K', 'M', 'N']
-    # plt.figure(figsize=(20, 20))
+    labels = [r"$F_x$", r"$F_y$", r"$F_z$", r"$M_x$", r"$M_y$", r"$M_z$"]
+
+    fig, ax = plt.subplots(len(indices), 1, figsize=(8, 6))
+
+    fig.tight_layout(pad=1.5)
+
     for i in range(len(indices)):
-        plt.subplot(3, 1, i + 1)
-        plt.plot(tau_cmd[:, indices[i]], label='Input $' + labels[indices[i]] + '$', linewidth=1, linestyle='-', color='black')
+        ax[i].plot(
+            tau_cmd[:, indices[i]],
+            label="Input " + labels[indices[i]],
+            linewidth=1,
+            linestyle="-",
+            color="black",
+        )
 
         for j in range(len(tau_alloc)):
-            plt.plot(tau_alloc[j][:, indices[i]], label='Output $' + labels[indices[i]] + '$', linewidth=1, linestyle='-')
+            ax[i].plot(
+                tau_alloc[j][:, indices[i]],
+                label="Output " + labels[indices[i]],
+                linewidth=1,
+                linestyle="-",
+                color=colors[j],
+            )
 
-        plt.grid(True)
-        plt.legend()
+        ax[i].set_xlabel("Sample [s]")
+        ax[i].set_ylabel(labels[indices[i]] + " [N]")
 
-    plt.show()
+        ax[i].grid(True)
+        ax[i].legend()
 
-def plot_2d_allocation(tau_cmd: np.ndarray, allocators: typing.List[skadipy.allocator.AllocatorBase], tau_hist: np.ndarray):
-    plt.scatter(tau_cmd[:, 0], tau_cmd[:, 1], s=5, label="Input forces", color='black')
 
-    colors = ['b','r','c']
-    for allocator, F,color in zip(allocators, tau_hist, colors):
-        plt.scatter(F[:, 0], F[:, 1], s=5, color=color)
+def plot_2d_allocation(
+    tau_cmd: np.ndarray,
+    allocators: typing.List[skadipy.allocator.AllocatorBase],
+    tau_hist: np.ndarray,
+):
+
+    fig, ax = plt.subplots(2, 1, height_ratios=[4, 1], figsize=(6, 8))
+
+    fig.tight_layout(pad=1.5)
+
+    ax[0].scatter(
+        tau_cmd[:, 0], tau_cmd[:, 1], s=5, label="Input forces", color="black"
+    )
+
+    for allocator, F, color in zip(allocators, tau_hist, colors):
+        ax[0].scatter(F[:, 0], F[:, 1], s=5, color=color)
         for i in range(len(tau_cmd)):
-            plt.plot([tau_cmd[i, 0], F[i, 0]], [tau_cmd[i, 1], F[i, 1]], "--", color=color, lw=0.5)
+            ax[0].plot(
+                [tau_cmd[i, 0], F[i, 0]],
+                [tau_cmd[i, 1], F[i, 1]],
+                "--",
+                color=color,
+                lw=0.5,
+            )
+
+    ax[0].grid(True)
+    ax[0].axis("equal")
+    ax[0].legend()
+    ax[0].set_xlabel(r"$F_x$ [N]")
+    ax[0].set_ylabel(r"$F_y$ [N]")
+
+    ax[1].plot(
+        tau_cmd[:, 5],
+        label=r"Input $M_z$",
+        linewidth=1,
+        linestyle="-",
+        color="black",
+    )
+
+    for j in range(len(tau_hist)):
+        ax[1].plot(
+            tau_hist[j][:, 5],
+            label=r"Output $M_z$",
+            linewidth=1,
+            linestyle="-",
+            color=colors[j],
+        )
+
+    ax[1].set_xlabel("Sample [s]")
+    ax[1].set_ylabel("$M_z$ [N]")
+
+    ax[1].grid(True)
+    ax[1].legend()
+
+
+def plot_angles(xi_hist):
+    angles = []
+    for xi in xi_hist:
+        a = np.empty((len(xi), 2))
+        for i, u in enumerate(xi):
+            a2 = np.arctan2(u[2], u[1])
+            a3 = np.arctan2(u[4], u[3])
+            a[i] = np.array([a3])
+        angles.append(a)
+
+    for _, angle in enumerate(angles):
+        angle[0:3, 0] = None
+
+    plt.clf()
+    for i, angle in enumerate(angles):
+        plt.plot(np.degrees(angle[:, 0]), color=colors[i])
+
+    plt.xlabel("Sample [s]")
+    plt.ylabel(r"$\alpha_1$ [Deg]")
+    plt.grid(True)
+
+
+def plot_thruster_forces(xi_hist):
+
+    fig, ax = plt.subplots(3, 1, figsize=(8, 6))
+
+    fig.tight_layout(pad=1.5)
+    for i, xi in enumerate(xi_hist):
+        F_0 = xi[:,0]
+        F_1 = np.linalg.norm(xi[:,1:2], axis=1)
+        F_2 = np.linalg.norm(xi[:,2:3], axis=1)
+        ax[0].plot(F_0, color=colors[i])
+        ax[1].plot(F_1, color=colors[i])
+        ax[2].plot(F_2, color=colors[i])
+
+        ax[0].set_ylabel("Tunnel [N]")
+        ax[1].set_ylabel("Starboard [N]")
+        ax[2].set_ylabel("Port [N]")
+        for j in range(3):
+            ax[j].set_xlabel("Sample [s]")
+            ax[j].grid(True)
+
+def plot_theta_histories(theta_hist):
+
+    for i in range(theta_hist.shape[0]):
+        plt.plot(theta_hist[i, :, 0], theta_hist[i, :, 1], "-o", color=colors[i])
+
+    plt.xlabel(r"$\theta_1$", fontdict={"size": 16})
+    plt.ylabel(r"$\theta_2$", fontdict={"size": 16})
+    plt.grid(True)

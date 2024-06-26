@@ -32,7 +32,7 @@ class ReferenceFilterBase(allocator.AllocatorBase):
         gamma: float = 1.0,
         mu: float = 1.0,
         rho: float = 1.0,
-        zeta: float = 0.1,
+        zeta: float = 1.0,
         control_barrier_function = safety.ControlBarrierFunctionType.ABSOLUTE,
         time_step: float = 0.1,
     ) -> None:

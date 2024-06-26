@@ -7,6 +7,8 @@ import scipy.io
 import skadipy as mc
 from typing import List
 
+import skadipy.allocator
+import skadipy.allocator.reference_filters as rf
 import skadipy.actuator
 import skadipy.actuator._base
 
@@ -16,13 +18,15 @@ def save_mat(
         inputs: np.ndarray,
         xi: np.ndarray,
         outputs: np.ndarray,
-        thetas: np.ndarray,
-        rho: np.ndarray,
-        mu: np.ndarray,
-        gamma: np.ndarray,
-        lambda_p: np.ndarray,
         thruster: skadipy.actuator._base.ActuatorBase,
+        thetas: np.ndarray = [],
+        rho: np.ndarray = [],
+        mu: np.ndarray = [],
+        gamma: np.ndarray = [],
+        zeta: np.ndarray = [],
+        lambda_p: np.ndarray = [],
     ):
+
 
     scipy.io.savemat(
         file_name=filename,
@@ -33,6 +37,7 @@ def save_mat(
             "theta": thetas,
             "rho": rho,
             "mu": mu,
+            "zeta": zeta,
             "gamma": gamma,
             "lambda_p": lambda_p,
             "attributes": thruster.extra_attributes
