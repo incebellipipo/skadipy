@@ -1,22 +1,20 @@
 # This is for the notebook to reload external python modules
 
+from IPython.display import Markdown, display
+import typing
+import matplotlib.pyplot as plt
 import sys
 
 
 sys.path.insert(0, "../src")
+import skadipy.safety
+import skadipy.toolbox
+import skadipy.allocator
+import skadipy.actuator
+import skadipy.allocator.reference_filters as rf
+
 
 from save_data import *
-import matplotlib.pyplot as plt
-import typing
-
-import skadipy.allocator.reference_filters as rf
-import skadipy.actuator
-import skadipy.allocator
-import skadipy.toolbox
-import skadipy.safety
-
-
-from IPython.display import Markdown, display
 
 # Importing the necessary modules
 
@@ -54,9 +52,10 @@ colors = [
 # Creating the vessel
 tunnel = skadipy.actuator.Fixed(
     position=skadipy.toolbox.Point([0.3875, 0.0, 0.0]),
-    orientation=skadipy.toolbox.Quaternion(axis=(0.0, 0.0, 1.0), radians=np.pi / 2.0),
+    orientation=skadipy.toolbox.Quaternion(
+        axis=(0.0, 0.0, 1.0), radians=np.pi / 2.0),
     extra_attributes={
-        "rate_limit": 0.1,
+        "rate_limit": 1.0,
         "saturation_limit": 1.0,
         "limits": [-1.0, 1.0],
     },
@@ -64,7 +63,7 @@ tunnel = skadipy.actuator.Fixed(
 voithschneider_port = skadipy.actuator.Azimuth(
     position=skadipy.toolbox.Point([-0.4574, -0.055, 0.0]),
     extra_attributes={
-        "rate_limit": 0.1,
+        "rate_limit": 1.0,
         "saturation_limit": 1.0,
         "reference_angle": np.pi / 4.0,
         "limits": [0.0, 1.0],
@@ -73,7 +72,7 @@ voithschneider_port = skadipy.actuator.Azimuth(
 voithschneider_starboard = skadipy.actuator.Azimuth(
     position=skadipy.toolbox.Point([-0.4547, 0.055, 0.0]),
     extra_attributes={
-        "rate_limit": 0.1,
+        "rate_limit": 1.0,
         "saturation_limit": 1.0,
         "reference_angle": -np.pi / 4.0,
         "limits": [0.0, 1.0],
@@ -85,24 +84,30 @@ ma_bow_port = skadipy.actuator.Fixed(
     orientation=skadipy.toolbox.Quaternion(
         axis=(0.0, 0.0, 1.0), angle=(3 * np.pi / 4.0)
     ),
-    extra_attributes={"rate_limit": 0.1, "saturation_limit": 1.0, "limits": [0.0, 1.0]},
+    extra_attributes={"rate_limit": 0.1,
+                      "saturation_limit": 1.0, "limits": [0.0, 1.0]},
 )
 ma_bow_starboard = skadipy.actuator.Fixed(
     position=skadipy.toolbox.Point([0.3, 0.1, 0.0]),
     orientation=skadipy.toolbox.Quaternion(
         axis=(0.0, 0.0, 1.0), angle=(-3 * np.pi / 4.0)
     ),
-    extra_attributes={"rate_limit": 0.1, "saturation_limit": 1.0, "limits": [0.0, 1.0]},
+    extra_attributes={"rate_limit": 0.1,
+                      "saturation_limit": 1.0, "limits": [0.0, 1.0]},
 )
 ma_aft_port = skadipy.actuator.Fixed(
     position=skadipy.toolbox.Point([-0.3, -0.1, 0.0]),
-    orientation=skadipy.toolbox.Quaternion(axis=(0.0, 0.0, 1.0), angle=(np.pi / 4.0)),
-    extra_attributes={"rate_limit": 0.1, "saturation_limit": 1.0, "limits": [0.0, 1.0]},
+    orientation=skadipy.toolbox.Quaternion(
+        axis=(0.0, 0.0, 1.0), angle=(np.pi / 4.0)),
+    extra_attributes={"rate_limit": 0.1,
+                      "saturation_limit": 1.0, "limits": [0.0, 1.0]},
 )
 ma_aft_starboard = skadipy.actuator.Fixed(
     position=skadipy.toolbox.Point([-0.3, 0.1, 0.0]),
-    orientation=skadipy.toolbox.Quaternion(axis=(0.0, 0.0, 1.0), angle=(-np.pi / 4.0)),
-    extra_attributes={"rate_limit": 0.1, "saturation_limit": 1.0, "limits": [0.0, 1.0]},
+    orientation=skadipy.toolbox.Quaternion(
+        axis=(0.0, 0.0, 1.0), angle=(-np.pi / 4.0)),
+    extra_attributes={"rate_limit": 0.1,
+                      "saturation_limit": 1.0, "limits": [0.0, 1.0]},
 )
 
 
@@ -144,7 +149,8 @@ def gen_clipped_sin(
     :return: The clipped sine wave.
     """
     return np.clip(
-        amplitude * np.sin(np.linspace(0, 2 * np.pi * period, n) + phase) + offset,
+        amplitude * np.sin(np.linspace(0, 2 * np.pi *
+                           period, n) + phase) + offset,
         clip_n,
         clip_p,
     )
@@ -239,6 +245,8 @@ def plot_histories(tau_cmd, tau_alloc, indices=[0, 1, 5]):
         ax[i].grid(True)
         ax[i].legend()
 
+    return fig, ax
+
 
 def plot_2d_allocation(
     tau_cmd: np.ndarray,
@@ -294,6 +302,8 @@ def plot_2d_allocation(
     ax[1].grid(True)
     ax[1].legend()
 
+    return fig, ax
+
 
 def plot_angles(xi_hist):
     angles = []
@@ -316,6 +326,8 @@ def plot_angles(xi_hist):
     ax.set_ylabel(r"$\alpha_1$ [Deg]")
     ax.grid(True)
 
+    return fig, ax
+
 
 def plot_thruster_forces(xi_hist):
 
@@ -323,29 +335,36 @@ def plot_thruster_forces(xi_hist):
 
     fig.tight_layout(pad=1.5)
     for i, xi in enumerate(xi_hist):
-        F_0 = xi[:,0]
-        F_1 = np.linalg.norm(xi[:,1:2], axis=1)
-        F_2 = np.linalg.norm(xi[:,2:3], axis=1)
+        F_0 = xi[:, 0]
+        F_1 = np.linalg.norm(xi[:, 1:2], axis=1)
+        F_2 = np.linalg.norm(xi[:, 2:3], axis=1)
         ax[0].plot(F_0, color=colors[i])
         ax[1].plot(F_1, color=colors[i])
         ax[2].plot(F_2, color=colors[i])
 
         ax[0].set_ylabel("Tunnel [N]")
-        ax[1].set_ylabel("Starboard [N]")
-        ax[2].set_ylabel("Port [N]")
+        ax[1].set_ylabel("Port [N]")
+        ax[2].set_ylabel("Starboard [N]")
         for j in range(3):
             ax[j].set_xlabel("Sample [s]")
             ax[j].grid(True)
+
+    return fig, ax
+
 
 def plot_theta_histories(theta_hist):
 
     fig, ax = plt.subplots(1, 1, figsize=(8, 8))
     for i in range(theta_hist.shape[0]):
-        ax.plot(theta_hist[i, :, 0], theta_hist[i, :, 1], "-o", color=colors[i])
+        ax.plot(theta_hist[i, :, 0], theta_hist[i, :, 1],
+                "-o", color=colors[i])
 
     ax.set_xlabel(r"$\theta_1$")
     ax.set_ylabel(r"$\theta_2$")
     ax.grid(True)
+
+    return fig, ax
+
 
 def generate_markdown_table(gamma, mu, rho, zeta, lambda_p):
     # Start the table with the header

@@ -113,7 +113,7 @@ class ReferenceFilterBase(allocator.AllocatorBase):
 
 
             ###
-            # cvompute the Control Lyapunov Function
+            # compute the Control Lyapunov Function
             ##
 
             # get the rate limit
