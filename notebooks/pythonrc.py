@@ -214,15 +214,18 @@ def run_tests(
     return (xi_hist, theta_hist, tau_hist)
 
 
-def plot_histories(tau_cmd, tau_alloc, indices=[0, 1, 5]):
+def plot_histories(tau_cmd, tau_alloc, indices=[0, 1, 5], dt=1.0):
     labels = [r"$F_x$", r"$F_y$", r"$F_z$", r"$M_x$", r"$M_y$", r"$M_z$"]
 
     fig, ax = plt.subplots(len(indices), 1, figsize=(8, 8))
 
     fig.tight_layout(pad=1.5)
 
+    t = np.linspace(0, dt * len(tau_cmd), len(tau_cmd))
+
     for i in range(len(indices)):
         ax[i].plot(
+            t,
             tau_cmd[:, indices[i]],
             label="Input " + labels[indices[i]],
             linewidth=1,
@@ -232,6 +235,7 @@ def plot_histories(tau_cmd, tau_alloc, indices=[0, 1, 5]):
 
         for j in range(len(tau_alloc)):
             ax[i].plot(
+                t,
                 tau_alloc[j][:, indices[i]],
                 label="Output " + labels[indices[i]],
                 linewidth=1,
@@ -239,7 +243,7 @@ def plot_histories(tau_cmd, tau_alloc, indices=[0, 1, 5]):
                 color=colors[j],
             )
 
-        ax[i].set_xlabel("Sample [$t_n$]")
+        ax[i].set_xlabel("Time [s]")
         ax[i].set_ylabel(labels[indices[i]] + " [N]")
 
         ax[i].grid(True)
@@ -252,9 +256,13 @@ def plot_2d_allocation(
     tau_cmd: np.ndarray,
     allocators: typing.List[skadipy.allocator.AllocatorBase],
     tau_hist: np.ndarray,
+    dt=1.0
 ):
 
     fig, ax = plt.subplots(2, 1, height_ratios=[4, 1], figsize=(8, 8))
+
+
+    t = np.linspace(0, dt * len(tau_cmd), len(tau_cmd))
 
     fig.tight_layout(pad=1.5)
 
@@ -280,6 +288,7 @@ def plot_2d_allocation(
     ax[0].set_ylabel(r"$F_y$ [N]")
 
     ax[1].plot(
+        t,
         tau_cmd[:, 5],
         label=r"Input $M_z$",
         linewidth=1,
@@ -289,6 +298,7 @@ def plot_2d_allocation(
 
     for j in range(len(tau_hist)):
         ax[1].plot(
+            t,
             tau_hist[j][:, 5],
             label=r"Output $M_z$",
             linewidth=1,
@@ -296,8 +306,8 @@ def plot_2d_allocation(
             color=colors[j],
         )
 
-    ax[1].set_xlabel("Sample [t_n]")
-    ax[1].set_ylabel("$M_z$ [N]")
+    ax[1].set_xlabel("Time [s]")
+    ax[1].set_ylabel("$M_z$ [Nm]")
 
     ax[1].grid(True)
     ax[1].legend()
@@ -305,8 +315,11 @@ def plot_2d_allocation(
     return fig, ax
 
 
-def plot_angles(xi_hist):
+def plot_angles(xi_hist, dt=1.0):
     angles = []
+
+    t = np.linspace(0, dt * len(xi_hist[0]), len(xi_hist[0]))
+
     for xi in xi_hist:
         a = np.empty((len(xi), 2))
         for i, u in enumerate(xi):
@@ -320,33 +333,35 @@ def plot_angles(xi_hist):
 
     fig, ax = plt.subplots(1, 1, figsize=(8, 8))
     for i, angle in enumerate(angles):
-        ax.plot(np.degrees(angle[:, 0]), color=colors[i])
+        ax.plot(t, np.degrees(angle[:, 0]), color=colors[i])
 
-    ax.set_xlabel("Sample [s]")
+    ax.set_xlabel("Time [s]")
     ax.set_ylabel(r"$\alpha_1$ [Deg]")
     ax.grid(True)
 
     return fig, ax
 
 
-def plot_thruster_forces(xi_hist):
+def plot_thruster_forces(xi_hist, dt=1.0):
 
     fig, ax = plt.subplots(3, 1, figsize=(8, 8))
+
+    t = np.linspace(0, dt * len(xi_hist[0]), len(xi_hist[0]))
 
     fig.tight_layout(pad=1.5)
     for i, xi in enumerate(xi_hist):
         F_0 = xi[:, 0]
         F_1 = np.linalg.norm(xi[:, 1:2], axis=1)
         F_2 = np.linalg.norm(xi[:, 2:3], axis=1)
-        ax[0].plot(F_0, color=colors[i])
-        ax[1].plot(F_1, color=colors[i])
-        ax[2].plot(F_2, color=colors[i])
+        ax[0].plot(t, F_0, color=colors[i])
+        ax[1].plot(t, F_1, color=colors[i])
+        ax[2].plot(t, F_2, color=colors[i])
 
         ax[0].set_ylabel("Tunnel [N]")
         ax[1].set_ylabel("Port [N]")
         ax[2].set_ylabel("Starboard [N]")
         for j in range(3):
-            ax[j].set_xlabel("Sample [s]")
+            ax[j].set_xlabel("Time [s]")
             ax[j].grid(True)
 
     return fig, ax

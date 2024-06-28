@@ -15,6 +15,7 @@ import skadipy.actuator._base
 
 def save_mat(
         filename: str,
+        dt: float,
         inputs: np.ndarray,
         xi: np.ndarray,
         outputs: np.ndarray,
@@ -32,6 +33,7 @@ def save_mat(
         file_name=filename,
         mdict={
             "inputs": inputs,
+            "dt": dt,
             "xi": xi,
             "outputs": outputs,
             "theta": thetas,
