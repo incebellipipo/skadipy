@@ -367,16 +367,31 @@ def plot_thruster_forces(xi_hist, dt=1.0):
     return fig, ax
 
 
-def plot_theta_histories(theta_hist):
+def plot_theta_histories(theta_hist, dt=1.0):
 
-    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
+    fig, ax = plt.subplots(3, 1, figsize=(8, 8), height_ratios=[3, 1, 1])
+
+    t = np.linspace(0, dt * len(theta_hist[0]), len(theta_hist[0]))
+
     for i in range(theta_hist.shape[0]):
-        ax.plot(theta_hist[i, :, 0], theta_hist[i, :, 1],
+        ax[0].plot(theta_hist[i, :, 0], theta_hist[i, :, 1],
                 "-o", color=colors[i])
 
-    ax.set_xlabel(r"$\theta_1$")
-    ax.set_ylabel(r"$\theta_2$")
-    ax.grid(True)
+    ax[0].set_xlabel(r"$\theta_1$")
+    ax[0].set_ylabel(r"$\theta_2$")
+    ax[0].grid(True)
+
+    for i in range(theta_hist.shape[0]):
+        ax[1].plot(t, theta_hist[i, :, 0], "-", color=colors[i])
+    ax[1].set_ylabel(r"$\theta_1$")
+
+    for i in range(theta_hist.shape[0]):
+        ax[2].plot(t, theta_hist[i, :, 1], "-", color=colors[i])
+    ax[2].set_ylabel(r"$\theta_2$")
+
+    for i in range(3):
+        ax[i].set_xlabel("Time [s]")
+        ax[i].grid(True)
 
     return fig, ax
 
