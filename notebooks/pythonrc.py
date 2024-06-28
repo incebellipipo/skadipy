@@ -239,7 +239,7 @@ def plot_histories(tau_cmd, tau_alloc, indices=[0, 1, 5]):
                 color=colors[j],
             )
 
-        ax[i].set_xlabel("Sample [s]")
+        ax[i].set_xlabel("Sample [$t_n$]")
         ax[i].set_ylabel(labels[indices[i]] + " [N]")
 
         ax[i].grid(True)
@@ -296,7 +296,7 @@ def plot_2d_allocation(
             color=colors[j],
         )
 
-    ax[1].set_xlabel("Sample [s]")
+    ax[1].set_xlabel("Sample [t_n]")
     ax[1].set_ylabel("$M_z$ [N]")
 
     ax[1].grid(True)
