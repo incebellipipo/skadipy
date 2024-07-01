@@ -62,6 +62,8 @@ class MinimumMagnitude(ReferenceFilterBase):
         # manifold
         self._xi = None
 
+        self._xi_desired = None
+
         self._derivative_solver = derivative
 
     def allocate(self, tau: np.ndarray, d_tau: np.ndarray = None) -> typing.Tuple[np.ndarray, np.ndarray]:
@@ -101,10 +103,10 @@ class MinimumMagnitude(ReferenceFilterBase):
         d_xi_p = self._b_matrix_weighted_inverse @ d_tau[dof_indices, :]
 
         # Get the desired allocated forces on the manifold
-        xi_d = xi_p + self._q_matrix @ self._theta
+        self._xi_desired = xi_p + self._q_matrix @ self._theta
 
         # Compute the error
-        xi_error = self._xi - xi_d
+        xi_error = self._xi - self._xi_desired
 
         # Compute the change in theta
         upsilon = - self._gamma * (self.__j_theta()).T

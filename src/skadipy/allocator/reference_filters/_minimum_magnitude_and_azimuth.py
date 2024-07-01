@@ -65,6 +65,8 @@ class MinimumMagnitudeAndAzimuth(ReferenceFilterBase):
 
         self._xi = None
 
+        self._xi_desired = None
+
     def allocate(self, tau: np.ndarray, d_tau: np.ndarray = None) -> typing.Tuple[np.ndarray, np.ndarray]:
         """
 
@@ -87,7 +89,8 @@ class MinimumMagnitudeAndAzimuth(ReferenceFilterBase):
         # Initialize the virtual force/torque
         if self._xi is None:
             self._xi = np.zeros(
-                (self._b_matrix[dof_indices, :].shape[1], 1), dtype=np.float32)
+                (self._b_matrix[dof_indices, :].shape[1], 1), dtype=np.float32
+            )
 
         # Compute $\dot{xi}_p and use exponential smoothing
         # Check if it has been provided to the function
@@ -102,13 +105,13 @@ class MinimumMagnitudeAndAzimuth(ReferenceFilterBase):
         d_xi_p = self._b_matrix_weighted_inverse @ d_tau[dof_indices, :]
 
         # Get the desired allocated forces on the manifold
-        xi_d = xi_p + self._q_matrix @ self._theta
+        self._xi_desired = xi_p + self._q_matrix @ self._theta
 
         # Compute the error
-        xi_error = self._xi - xi_d
+        xi_error = self._xi - self._xi_desired
 
         # Compute the change in theta
-        upsilon = - self._gamma * (self.__j_theta(xi_desired=xi_d)).T
+        upsilon = - self._gamma * (self.__j_theta(xi_desired=self._xi_desired)).T
         theta_dot = upsilon - self._mu * (self.__v_theta(xi_error).T)
 
         # Advance theta as much as the change in theta

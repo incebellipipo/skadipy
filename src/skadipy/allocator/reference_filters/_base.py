@@ -77,8 +77,6 @@ class ReferenceFilterBase(allocator.AllocatorBase):
         # Kappa method
         self._control_barrier_function = control_barrier_function
 
-        self._xi_virtual = None
-
         # Time step
         self._t_s = time_step
 

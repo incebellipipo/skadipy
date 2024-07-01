@@ -48,19 +48,21 @@ colors = [
     "#A2142F",
 ]
 
+
 def darken_hex_color(hex_color, percentage=20):
     """Darken the given hex color by the specified percentage."""
     # Convert hex color to RGB tuple
-    hex_color = hex_color.lstrip('#')
-    rgb = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+    hex_color = hex_color.lstrip("#")
+    rgb = tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
 
     # Darken each RGB component by the given percentage
     darkened_rgb = tuple(max(0, int(c * (1 - percentage / 100))) for c in rgb)
 
     # Convert RGB tuple back to hex color
-    darkened_hex = '#{:02X}{:02X}{:02X}'.format(*darkened_rgb)
+    darkened_hex = "#{:02X}{:02X}{:02X}".format(*darkened_rgb)
 
     return darkened_hex
+
 
 darker_colors = [darken_hex_color(color) for color in colors]
 
@@ -165,10 +167,10 @@ def gen_clipped_sin(
 
 @dataclass
 class TestResults:
-    xi_hist: np.ndarray
-    xi_desired_hist: np.ndarray
-    theta_hist: np.ndarray
-    tau_desired_hist: np.ndarray
+    xi_out_hist: np.ndarray = np.array([]),
+    xi_desired_hist: np.ndarray = np.array([]),
+    theta_hist: np.ndarray = np.array([]),
+    tau_desired_hist: np.ndarray = np.array([])
 
     def __init__(self):
         pass
@@ -207,7 +209,7 @@ def run_tests2(
     del B, dof_indices
 
     # Prepare the history arrays
-    results.xi_hist = np.zeros((len(allocators), N, n))
+    results.xi_out_hist = np.zeros((len(allocators), N, n))
     results.xi_desired_hist = np.zeros((len(allocators), N, n))
     results.theta_hist = np.zeros((len(allocators), N, q))
     results.tau_desired_hist = np.zeros((len(allocators), N, 6))
@@ -221,23 +223,24 @@ def run_tests2(
             if d_tau_cmd is not None:
                 kwargs["d_tau"] = np.reshape(d_tau_cmd[j], (6, 1))
 
-            xi_desired, theta = allocator.allocate(**kwargs)
+            if isinstance(allocator, rf.ReferenceFilterBase):
+                pass
+
+            xi_out, theta = allocator.allocate(**kwargs)
 
             if isinstance(allocator, rf.ReferenceFilterBase):
-                xi = allocator._xi
-                results.xi_desired_hist[i, j, :] = xi_desired.flatten()
+
+                results.xi_out_hist[i, j, :] = xi_out.flatten()
+
+                results.xi_desired_hist[i, j, :] = allocator._xi_desired.flatten()
 
                 if theta is not None:
                     results.theta_hist[i, j, :] = theta.flatten()
 
                 results.tau_desired_hist[i, j, :] = allocator.allocated.flatten()
 
-                results.xi_hist[i, j, :] = xi.flatten()
-
             else:
-                results.xi_desired_hist[i, j, :] = np.array(
-                    xi_desired, dtype=float
-                ).flatten()
+                results.xi_out_hist[i, j, :] = np.array(xi_out, dtype=float).flatten()
                 results.tau_desired_hist[i, j, :] = allocator.allocated.flatten()
 
     # Return the results
@@ -363,7 +366,11 @@ def plot_2d_allocation(
     step_size = len(tau_cmd) // npoints
 
     ax[0].scatter(
-        tau_cmd[::step_size, 0], tau_cmd[::step_size, 1], s=5, label="Input forces", color="black"
+        tau_cmd[::step_size, 0],
+        tau_cmd[::step_size, 1],
+        s=5,
+        label="Input forces",
+        color="black",
     )
 
     for allocator, F, color in zip(allocators, tau_hist, colors):
@@ -375,6 +382,7 @@ def plot_2d_allocation(
                 "--",
                 color=color,
                 lw=0.5,
+                label="_nolegend_",
             )
 
     ax[0].grid(True)
@@ -462,7 +470,7 @@ def plot_angles_reference_filter(xi_hist, xi_desired_hist, dt=1.0):
     fig, ax = plt.subplots(1, 1, figsize=(8, 8))
     for i, (angle, angle_desired) in enumerate(zip(angles, angles_desired)):
         ax.plot(t, np.degrees(angle[:, 0]), color=colors[i])
-        ax.plot(t, np.degrees(angle_desired[:, 0]), '-.', color=darker_colors[i])
+        ax.plot(t, np.degrees(angle_desired[:, 0]), "-.", color=darker_colors[i])
 
     ax.set_xlabel("Time [s]")
     ax.set_ylabel(r"$\alpha_1$ [Deg]")

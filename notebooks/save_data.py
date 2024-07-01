@@ -14,27 +14,28 @@ import skadipy.actuator._base
 
 
 def save_mat(
-        filename: str,
-        dt: float,
-        inputs: np.ndarray,
-        xi: np.ndarray,
-        outputs: np.ndarray,
-        thruster: skadipy.actuator._base.ActuatorBase,
-        thetas: np.ndarray = [],
-        rho: np.ndarray = [],
-        mu: np.ndarray = [],
-        gamma: np.ndarray = [],
-        zeta: np.ndarray = [],
-        lambda_p: np.ndarray = [],
-    ):
-
+    filename: str,
+    dt: float,
+    inputs: np.ndarray = np.array([]),
+    xi_out: np.ndarray = np.array([]),
+    xi_desired: np.ndarray = np.array([]),
+    outputs: np.ndarray = np.array([]),
+    thruster: skadipy.actuator.ActuatorBase = skadipy.actuator.Vectored(),
+    thetas: np.ndarray = np.array([]),
+    rho: np.ndarray = np.array([]),
+    mu: np.ndarray = np.array([]),
+    gamma: np.ndarray = np.array([]),
+    zeta: np.ndarray = np.array([]),
+    lambda_p: np.ndarray = np.array([]),
+):
 
     scipy.io.savemat(
         file_name=filename,
         mdict={
             "inputs": inputs,
             "dt": dt,
-            "xi": xi,
+            "xi_out": xi_out,
+            "xi_desired": xi_desired,
             "outputs": outputs,
             "theta": thetas,
             "rho": rho,
@@ -42,6 +43,6 @@ def save_mat(
             "zeta": zeta,
             "gamma": gamma,
             "lambda_p": lambda_p,
-            "attributes": thruster.extra_attributes
-        }
+            "attributes": thruster.extra_attributes,
+        },
     )
