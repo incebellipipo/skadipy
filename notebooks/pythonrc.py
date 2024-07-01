@@ -354,7 +354,7 @@ def plot_2d_allocation(
     allocators: typing.List[skadipy.allocator.AllocatorBase],
     tau_hist: np.ndarray,
     dt=1.0,
-    npoints=100,
+    npoints=150,
 ):
 
     fig, ax = plt.subplots(2, 1, height_ratios=[4, 1], figsize=(8, 8))
@@ -469,8 +469,8 @@ def plot_angles_reference_filter(xi_hist, xi_desired_hist, dt=1.0):
 
     fig, ax = plt.subplots(1, 1, figsize=(8, 8))
     for i, (angle, angle_desired) in enumerate(zip(angles, angles_desired)):
-        ax.plot(t, np.degrees(angle[:, 0]), color=colors[i])
-        ax.plot(t, np.degrees(angle_desired[:, 0]), "-.", color=darker_colors[i])
+        ax.plot(t, np.degrees(np.unwrap(angle[:, 0])), color=colors[i])
+        ax.plot(t, np.degrees(np.unwrap(angle_desired[:, 0])), "-.", color=darker_colors[i])
 
     ax.set_xlabel("Time [s]")
     ax.set_ylabel(r"$\alpha_1$ [Deg]")
@@ -514,11 +514,11 @@ def plot_thruster_forces_reference_filter(xi_hist, xi_desired_hist, dt=1.0):
     for i, (xi, xi_d) in enumerate(zip(xi_hist, xi_desired_hist)):
         F_0 = xi[:, 0]
         F_1 = np.linalg.norm(xi[:, 1:2], axis=1)
-        F_2 = np.linalg.norm(xi[:, 2:3], axis=1)
+        F_2 = np.linalg.norm(xi[:, 3:4], axis=1)
 
         F_d0 = xi_d[:, 0]
         F_d1 = np.linalg.norm(xi_d[:, 1:2], axis=1)
-        F_d2 = np.linalg.norm(xi_d[:, 2:3], axis=1)
+        F_d2 = np.linalg.norm(xi_d[:, 3:4], axis=1)
 
         ax[0].plot(t, F_0, "-", color=colors[i])
         ax[0].plot(t, F_d0, "--", color=darker_colors[i])
