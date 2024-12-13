@@ -4,6 +4,7 @@
 ### Project
 
 notebooks/data/*
+notebooks/plots/*
 !notebooks/data/.gitkeep
 
 ### CMake ###

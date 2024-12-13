@@ -167,10 +167,10 @@ def gen_clipped_sin(
 
 @dataclass
 class TestResults:
-    xi_out_hist: np.ndarray = np.array([]),
-    xi_desired_hist: np.ndarray = np.array([]),
-    theta_hist: np.ndarray = np.array([]),
-    tau_desired_hist: np.ndarray = np.array([])
+    xi_out_hist: np.ndarray
+    xi_desired_hist: np.ndarray
+    theta_hist: np.ndarray
+    tau_desired_hist: np.ndarray
 
     def __init__(self):
         pass
@@ -456,9 +456,10 @@ def plot_angles_reference_filter(xi_hist, xi_desired_hist, dt=1.0):
         a = np.empty((len(xi), 2))
         a_d = np.empty((len(xi), 2))
         for i, (u, u_d) in enumerate(zip(xi, xi_d)):
-
-            a[i] = np.array([np.arctan2(u[4], u[3])])
-            a_d[i] = np.array([np.arctan2(u_d[4], u_d[3])])
+            un = u[3:5] / (np.linalg.norm(u[3:5]) + 1e-5)
+            a[i] = np.array([np.arctan2(un[1], un[0])])
+            und = u_d[3:5] / (np.linalg.norm(u_d[3:5]) + 1e-5)
+            a_d[i] = np.array([np.arctan2(und[1], und[0])])
 
         angles.append(a)
 
@@ -539,28 +540,21 @@ def plot_thruster_forces_reference_filter(xi_hist, xi_desired_hist, dt=1.0):
 
 def plot_theta_histories(theta_hist, dt=1.0):
 
-    fig, ax = plt.subplots(3, 1, figsize=(8, 8), height_ratios=[3, 1, 1])
+    fig, ax = plt.subplots(2, 1, figsize=(6, 4), height_ratios=[1, 1])
 
     t = np.linspace(0, dt * len(theta_hist[0]), len(theta_hist[0]))
 
     for i in range(theta_hist.shape[0]):
-        ax[0].plot(theta_hist[i, :, 0], theta_hist[i, :, 1], "-o", color=colors[i])
-
-    ax[0].set_xlabel(r"$\theta_1$")
-    ax[0].set_ylabel(r"$\theta_2$")
-    ax[0].grid(True)
+        ax[0].plot(t, theta_hist[i, :, 0], "-", color=colors[i])
+    ax[0].set_ylabel(r"$\theta_1$")
 
     for i in range(theta_hist.shape[0]):
-        ax[1].plot(t, theta_hist[i, :, 0], "-", color=colors[i])
-    ax[1].set_ylabel(r"$\theta_1$")
+        ax[1].plot(t, theta_hist[i, :, 1], "-", color=colors[i])
+    ax[1].set_ylabel(r"$\theta_2$")
 
-    for i in range(theta_hist.shape[0]):
-        ax[2].plot(t, theta_hist[i, :, 1], "-", color=colors[i])
-    ax[2].set_ylabel(r"$\theta_2$")
-
-    for i in range(1, 3):
-        ax[i].set_xlabel("Time [s]")
-        ax[i].grid(True)
+    for a in ax:
+        a.set_xlabel("Time [s]")
+        a.grid(True)
 
     return fig, ax
 
