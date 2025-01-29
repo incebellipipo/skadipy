@@ -67,6 +67,27 @@ A python library for solving the control allocation problem for marine craft wit
 - `docs`: Documentation for the library
 - `bin`: Scripts for running the library
 
+## Citation
+
+If you use this work, pleae cite the following
+
+```
+@article{GEZER2024374,
+title = {Maneuvering-based Dynamic Thrust Allocation for Fully-Actuated Vessels},
+journal = {IFAC-PapersOnLine},
+volume = {58},
+number = {20},
+pages = {374-379},
+year = {2024},
+note = {15th IFAC Conference on Control Applications in Marine Systems, Robotics and Vehicles CAMS 2024},
+issn = {2405-8963},
+doi = {https://doi.org/10.1016/j.ifacol.2024.10.082},
+url = {https://doi.org/10.1016/j.ifacol.2024.10.082},
+author = {Emir Cem Gezer and Roger Skjetne},
+keywords = {Thrust allocation, Control Allocation, Maneuvering theory, Dynamic Positioning, Nonlinear Control, Control Barrier Functions, Ocean Engineering},
+}
+```
+
 ## Acknowledgements
 
 Work funded by the Research Council of Norway (RCN) through NTNU AMOS (RCN project 223254), SFI AutoShip (RCN project 309230), and the Polish National Centre for Research and Development through the ENDURE project (NOR/POLNOR/ENDURE/0019/2019-00).

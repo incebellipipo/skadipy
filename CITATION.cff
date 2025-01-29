@@ -13,7 +13,8 @@ issue: 20
 pages: "374-379"
 doi: "10.1016/j.ifacol.2024.10.082"
 url: "https://doi.org/10.1016/j.ifacol.2024.10.082"
-isbn: "2405-8963"
+type: "article"
+issn: "2405-8963"
 abstract: "This paper introduces a new approach to solving the thrust allocation problem using the maneuvering problem in the maritime domain for fully actuated vessels. The method uses a control Lyapunov function to create a nonlinear reference filter for the thruster forces. The filter ensures dynamic tracking of the optimal thrust allocation solution with rate limitation in the output thruster references. It further uses control barrier functions to ensure that the thruster force saturation limits are respected. The approach aims for simplicity and effectiveness, as well as smooth and dynamic thruster reference signals, in the implementation of thrust allocation for marine vessels."
 keywords:
   - "Thrust allocation"
@@ -23,4 +24,4 @@ keywords:
   - "Nonlinear Control"
   - "Control Barrier Functions"
   - "Ocean Engineering"
-license: "CC-BY-4.0"
+license: "GPLv3"
