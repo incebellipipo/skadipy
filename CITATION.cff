@@ -1,27 +1,26 @@
 cff-version: 1.2.0
-message: "If you use this work, please cite it using the following metadata."
-title: "Maneuvering-based Dynamic Thrust Allocation for Fully-Actuated Vessels"
-authors:
-  - family-names: "Gezer"
-    given-names: "Emir Cem"
-  - family-names: "Skjetne"
-    given-names: "Roger"
-year: 2024
-journal: "IFAC-PapersOnLine"
-volume: 58
-issue: 20
-pages: "374-379"
-doi: "10.1016/j.ifacol.2024.10.082"
-url: "https://doi.org/10.1016/j.ifacol.2024.10.082"
-type: "article"
-issn: "2405-8963"
-abstract: "This paper introduces a new approach to solving the thrust allocation problem using the maneuvering problem in the maritime domain for fully actuated vessels. The method uses a control Lyapunov function to create a nonlinear reference filter for the thruster forces. The filter ensures dynamic tracking of the optimal thrust allocation solution with rate limitation in the output thruster references. It further uses control barrier functions to ensure that the thruster force saturation limits are respected. The approach aims for simplicity and effectiveness, as well as smooth and dynamic thruster reference signals, in the implementation of thrust allocation for marine vessels."
-keywords:
-  - "Thrust allocation"
-  - "Control Allocation"
-  - "Maneuvering theory"
-  - "Dynamic Positioning"
-  - "Nonlinear Control"
-  - "Control Barrier Functions"
-  - "Ocean Engineering"
-license: "GPLv3"
+message: "If you use this work, please cite it as below."
+preferred-citation:
+  type: conference-paper
+  title: "Maneuvering-based Dynamic Thrust Allocation for Fully-Actuated Vessels"
+  authors:
+    - family-names: "Gezer"
+      given-names: "Emir Cem"
+    - family-names: "Skjetne"
+      given-names: "Roger"
+  year: 2024
+  conference: "15th IFAC Conference on Control Applications in Marine Systems, Robotics and Vehicles (CAMS 2024)"
+  publisher: "IFAC-PapersOnLine"
+  volume: 58
+  issue: 20
+  pages: "374-379"
+  doi: "https://doi.org/10.1016/j.ifacol.2024.10.082"
+  url: "https://www.sciencedirect.com/science/article/pii/S2405896324018378"
+  keywords:
+    - "Thrust allocation"
+    - "Control Allocation"
+    - "Maneuvering theory"
+    - "Dynamic Positioning"
+    - "Nonlinear Control"
+    - "Control Barrier Functions"
+    - "Ocean Engineering"
