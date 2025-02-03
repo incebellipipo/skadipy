@@ -1,6 +1,6 @@
 [![Python package](https://github.com/incebellipipo/skadipy/actions/workflows/run_test.yml/badge.svg)](https://github.com/incebellipipo/skadipy/actions/workflows/run_test.yml)
 
-# mccontrolpy
+# SkadiPy
 
 A python library for solving the control allocation problem for marine craft with different types of actuators and control allocation methods.
 

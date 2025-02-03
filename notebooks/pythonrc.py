@@ -95,29 +95,29 @@ voithschneider_starboard = skadipy.actuator.Azimuth(
     },
 )
 
-ma_bow_port = skadipy.actuator.Fixed(
-    position=skadipy.toolbox.Point([0.3, -0.1, 0.0]),
+ma_bow_port = skadipy.actuator.Azimuth(
+    position=skadipy.toolbox.Point([1.8, -0.8, 0.0]),
     orientation=skadipy.toolbox.Quaternion(
         axis=(0.0, 0.0, 1.0), angle=(3 * np.pi / 4.0)
     ),
-    extra_attributes={"rate_limit": 0.1, "saturation_limit": 1.0, "limits": [0.0, 1.0]},
+    extra_attributes={"rate_limit": 0.1, "saturation_limit": 100.0, "limits": [0.0, 1.0]},
 )
-ma_bow_starboard = skadipy.actuator.Fixed(
-    position=skadipy.toolbox.Point([0.3, 0.1, 0.0]),
+ma_bow_starboard = skadipy.actuator.Azimuth(
+    position=skadipy.toolbox.Point([1.8, 0.8, 0.0]),
     orientation=skadipy.toolbox.Quaternion(
         axis=(0.0, 0.0, 1.0), angle=(-3 * np.pi / 4.0)
     ),
-    extra_attributes={"rate_limit": 0.1, "saturation_limit": 1.0, "limits": [0.0, 1.0]},
+    extra_attributes={"rate_limit": 0.1, "saturation_limit": 100.0, "limits": [0.0, 1.0]},
 )
-ma_aft_port = skadipy.actuator.Fixed(
-    position=skadipy.toolbox.Point([-0.3, -0.1, 0.0]),
+ma_aft_port = skadipy.actuator.Azimuth(
+    position=skadipy.toolbox.Point([-1.8, 0.8, 0.0]),
     orientation=skadipy.toolbox.Quaternion(axis=(0.0, 0.0, 1.0), angle=(np.pi / 4.0)),
-    extra_attributes={"rate_limit": 0.1, "saturation_limit": 1.0, "limits": [0.0, 1.0]},
+    extra_attributes={"rate_limit": 0.1, "saturation_limit": 100.0, "limits": [0.0, 1.0]},
 )
-ma_aft_starboard = skadipy.actuator.Fixed(
-    position=skadipy.toolbox.Point([-0.3, 0.1, 0.0]),
+ma_aft_starboard = skadipy.actuator.Azimuth(
+    position=skadipy.toolbox.Point([-1.8, -0.8, 0.0]),
     orientation=skadipy.toolbox.Quaternion(axis=(0.0, 0.0, 1.0), angle=(-np.pi / 4.0)),
-    extra_attributes={"rate_limit": 0.1, "saturation_limit": 1.0, "limits": [0.0, 1.0]},
+    extra_attributes={"rate_limit": 0.1, "saturation_limit": 100.0, "limits": [0.0, 1.0]},
 )
 
 
