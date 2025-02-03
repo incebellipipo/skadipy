@@ -129,7 +129,7 @@ class AllocatorBase(ABC):
         raise NotImplementedError()
 
     def _command(self, f: np.ndarray) -> None:
-        """
+        r"""
         Command the actuators
 
         :param f: Control input in :math:`\mathbb{R}^q`
