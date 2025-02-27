@@ -142,6 +142,9 @@ class ReferenceFilterBase(allocator.AllocatorBase):
             elif self._control_barrier_function == safety.ControlBarrierFunctionType.QUADRATIC:
                 kappa[i:i+cols] = safety.quadratic(xi[i: i + cols], kappa[i: i + cols], self._rho, a)
 
+            elif self._control_barrier_function == safety.ControlBarrierFunctionType.LINEAR_COMBINATION:
+                kappa[i:i+cols] = safety.linear_combination(xi[i: i + cols], kappa[i: i + cols], self._rho, a)
+
             # Increment it as much as the columns in the capability matrix
             i += cols
 

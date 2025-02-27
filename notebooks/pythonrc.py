@@ -13,6 +13,7 @@ import skadipy.allocator
 import skadipy.actuator
 import skadipy.allocator.reference_filters as rf
 
+from skadipy.plotting.nice_plots import *
 
 from save_data import *
 
@@ -31,40 +32,6 @@ plt.rcParams.update({"ytick.labelsize": 10})
 # keep the font size for legend the same
 plt.rcParams.update({"legend.fontsize": 10})
 
-
-# colors = ["#0072BD", "#EDB120", "#77AC30", "#7E2F8E", "#4DBEEE"]
-# colors = ["C0","C1","C2","C3","C4","C5","C6","C7","C8","C9"]
-# matlab color hex
-colors = [
-    "#0072BD",
-    "#D95319",
-    "#77AC30",
-    "#A2142F",
-    "#4DBEEE",
-    "#EDB120",
-    "#7E2F8E",
-    "#77AC30",
-    "#4DBEEE",
-    "#A2142F",
-]
-
-
-def darken_hex_color(hex_color, percentage=20):
-    """Darken the given hex color by the specified percentage."""
-    # Convert hex color to RGB tuple
-    hex_color = hex_color.lstrip("#")
-    rgb = tuple(int(hex_color[i : i + 2], 16) for i in (0, 2, 4))
-
-    # Darken each RGB component by the given percentage
-    darkened_rgb = tuple(max(0, int(c * (1 - percentage / 100))) for c in rgb)
-
-    # Convert RGB tuple back to hex color
-    darkened_hex = "#{:02X}{:02X}{:02X}".format(*darkened_rgb)
-
-    return darkened_hex
-
-
-darker_colors = [darken_hex_color(color) for color in colors]
 
 # Creating the vessel
 tunnel = skadipy.actuator.Fixed(
@@ -100,24 +67,46 @@ ma_bow_port = skadipy.actuator.Azimuth(
     orientation=skadipy.toolbox.Quaternion(
         axis=(0.0, 0.0, 1.0), angle=(3 * np.pi / 4.0)
     ),
-    extra_attributes={"rate_limit": 0.1, "saturation_limit": 100.0, "limits": [0.0, 1.0]},
+    extra_attributes={
+        "rate_limit": 0.1,
+        "saturation_limit": 10.0,
+        "limits": [0.0, 1.0],
+        "reference_angle": 0.0,
+    },
 )
 ma_bow_starboard = skadipy.actuator.Azimuth(
     position=skadipy.toolbox.Point([1.8, 0.8, 0.0]),
     orientation=skadipy.toolbox.Quaternion(
         axis=(0.0, 0.0, 1.0), angle=(-3 * np.pi / 4.0)
     ),
-    extra_attributes={"rate_limit": 0.1, "saturation_limit": 100.0, "limits": [0.0, 1.0]},
+    extra_attributes={
+        "rate_limit": 0.1,
+        "saturation_limit": 10.0,
+        "limits": [0.0, 1.0],
+        "reference_angle": 0.0,
+    },
 )
 ma_aft_port = skadipy.actuator.Azimuth(
-    position=skadipy.toolbox.Point([-1.8, 0.8, 0.0]),
-    orientation=skadipy.toolbox.Quaternion(axis=(0.0, 0.0, 1.0), angle=(np.pi / 4.0)),
-    extra_attributes={"rate_limit": 0.1, "saturation_limit": 100.0, "limits": [0.0, 1.0]},
+    position=skadipy.toolbox.Point([-1.8, -0.8, 0.0]),
+    orientation=skadipy.toolbox.Quaternion(
+        axis=(0.0, 0.0, 1.0), angle=(np.pi / 4.0)),
+    extra_attributes={
+        "rate_limit": 0.1,
+        "saturation_limit": 10.0,
+        "limits": [0.0, 1.0],
+        "reference_angle": 0.0,
+    },
 )
 ma_aft_starboard = skadipy.actuator.Azimuth(
-    position=skadipy.toolbox.Point([-1.8, -0.8, 0.0]),
-    orientation=skadipy.toolbox.Quaternion(axis=(0.0, 0.0, 1.0), angle=(-np.pi / 4.0)),
-    extra_attributes={"rate_limit": 0.1, "saturation_limit": 100.0, "limits": [0.0, 1.0]},
+    position=skadipy.toolbox.Point([-1.8, 0.8, 0.0]),
+    orientation=skadipy.toolbox.Quaternion(
+        axis=(0.0, 0.0, 1.0), angle=(- np.pi / 4.0)),
+    extra_attributes={
+        "rate_limit": 0.1,
+        "saturation_limit": 10.0,
+        "limits": [0.0, 1.0],
+        "reference_angle": 0.0,
+    },
 )
 
 
@@ -471,7 +460,9 @@ def plot_angles_reference_filter(xi_hist, xi_desired_hist, dt=1.0):
     fig, ax = plt.subplots(1, 1, figsize=(8, 8))
     for i, (angle, angle_desired) in enumerate(zip(angles, angles_desired)):
         ax.plot(t, np.degrees(np.unwrap(angle[:, 0])), color=colors[i])
-        ax.plot(t, np.degrees(np.unwrap(angle_desired[:, 0])), "-.", color=darker_colors[i])
+        ax.plot(
+            t, np.degrees(np.unwrap(angle_desired[:, 0])), "-.", color=darker_colors[i]
+        )
 
     ax.set_xlabel("Time [s]")
     ax.set_ylabel(r"$\alpha_1$ [Deg]")

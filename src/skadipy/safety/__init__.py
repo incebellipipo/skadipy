@@ -14,4 +14,4 @@
 #
 # Copyright (C) 2024 Emir Cem Gezer, NTNU
 
-from ._cbf import ControlBarrierFunctionType, sumsquare, absolute, quadratic
+from ._cbf import ControlBarrierFunctionType, sumsquare, absolute, quadratic, linear_combination

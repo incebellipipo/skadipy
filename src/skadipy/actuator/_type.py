@@ -18,6 +18,19 @@ from enum import Enum
 
 
 class ConfigurationType(Enum):
+    """
+    Enum class for the configuration types of the actuator.
+
+    Attributes:
+        UNKNOWN: Unknown configuration type.
+            This is for type safety.
+        BASIC: Basic configuration type.
+            This configuration type is used for actuators with 1 DOF.
+        EXTENDED_PLANAR: Extended planar configuration type.
+            This configuration type is used for planar actuators with to 2 DOF.
+        EXTENDED_FULL: Extended full configuration
+            This configuration type is used for actuators with 3 DOF.
+    """
     UNKNOWN = -1
     BASIC = 0
     EXTENDED_PLANAR = 1
