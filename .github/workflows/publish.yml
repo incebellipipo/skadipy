@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/cartoblobpy
+      url: https://pypi.org/p/skadipy
     steps:
       - name: Checkout (full history for setuptools-scm)
         uses: actions/checkout@v4
@@ -71,4 +71,3 @@ jobs:
 
       - name: Post publish note
         run: echo "Published cartoblobpy (may take a minute to appear)."
-        
