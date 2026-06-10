@@ -94,9 +94,9 @@ class AllocatorBase(ABC):
         :return: None
         """
         # Compute capability configuration
-        for actuator in self._actuators:
+        for a in self._actuators:
             # Compute the contribution of the actuator to the configuration matrix
-            actuator.compute_contribution_configuration()
+            a.compute_contribution_configuration()
 
         # Concatenate capability configurations to create the B matrix
         self._b_matrix = np.concatenate([i.B for i in self._actuators], axis=1)
@@ -104,28 +104,29 @@ class AllocatorBase(ABC):
         # Compute the weight matrix
         self._w_matrix = np.diag(sum([i.W for i in self._actuators], []))
 
+    @typing.overload
     @abstractmethod
     def allocate(self, tau: np.ndarray) -> typing.Tuple[np.ndarray, np.ndarray]:
         """
         Allocate control input to actuators
 
         This method is implemented by the subclasses.
-
-        :param tau: Control input
-        :return: Allocation
         """
-        raise NotImplementedError()
+        ...
 
+    @typing.overload
     @abstractmethod
     def allocate(self, tau: np.ndarray, d_tau: np.ndarray) -> typing.Tuple[np.ndarray, np.ndarray]:
         """
         Allocate control input to actuators
 
         This method is implemented by the subclasses.
-
-        :param tau: Control input
-        :return: Allocation, Theta
         """
+        ...
+
+    @abstractmethod
+    def allocate(self, tau: np.ndarray, d_tau: np.ndarray = None) -> typing.Tuple[np.ndarray, np.ndarray]:
+        """This is the actual implementation that subclasses will override."""
         raise NotImplementedError()
 
     def _command(self, f: np.ndarray) -> None:
@@ -137,11 +138,11 @@ class AllocatorBase(ABC):
         """
         # Command the actuators
         i = 0
-        for actuator in self._actuators:
+        for a in self._actuators:
             # Get the number of rows and columns of the actuator matrix
             # and command the actuator
-            _, cols = actuator.B.shape
-            actuator.command(f[i:i + cols])
+            _, cols = a.B.shape
+            a.command(f[i:i + cols])
             i = i + cols
 
     @property
