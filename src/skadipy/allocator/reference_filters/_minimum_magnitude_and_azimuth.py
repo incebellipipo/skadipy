@@ -15,11 +15,12 @@
 # Copyright (C) 2024 Emir Cem Gezer, NTNU
 
 import numpy as np
-import scipy
 import typing
 
 from ._base import ReferenceFilterBase
-from ...safety import *
+from ...safety import (
+    ControlBarrierFunctionType,
+)
 from ... import allocator
 from ... import actuator
 from ... import toolbox
@@ -94,7 +95,7 @@ class MinimumMagnitudeAndAzimuth(ReferenceFilterBase):
 
         # Compute $\dot{xi}_p and use exponential smoothing
         # Check if it has been provided to the function
-        if type(d_tau) == type(None):
+        if d_tau is None:
             d_tau = self._derivative_solver(tau) / self._t_s
 
         # Compute the particular solution
@@ -136,8 +137,8 @@ class MinimumMagnitudeAndAzimuth(ReferenceFilterBase):
         j_theta = np.zeros_like(self._theta).T
 
         i = 0
-        for actuator in self._actuators:
-            _, cols = actuator.B.shape
+        for a in self._actuators:
+            _, cols = a.B.shape
 
             # Get the desired force/torque for the actuator
             xi_di = xi_desired[i:i + cols]
@@ -145,39 +146,36 @@ class MinimumMagnitudeAndAzimuth(ReferenceFilterBase):
             xi_ref = self._xi[i:i + cols]
 
             # Get the weight of the actuator. If it is not specified, use 1.0
-            w = actuator.extra_attributes.get('w', 1.0)
+            w = a.extra_attributes.get('w', 1.0)
 
-            xi_desired_norm = np.linalg.norm(xi_di)
-            xi_ref_norm = np.linalg.norm(xi_ref)
+            # xi_desired_norm = np.linalg.norm(xi_di)
 
-            if xi_desired_norm != 0.0:
-                if cols == 1:
-                    # This is for non-azimuthal actuators
-                    sigma_ref = actuator.extra_attributes.get(
-                        'reference_direction', None)
-                    if sigma_ref == None:
-                        sigma_ref = xi_ref / (np.linalg.norm(xi_ref) + toolbox.constants.EPSILON)
-                    else:
-                        sigma_ref = np.array([sigma_ref])
+            # if xi_desired_norm != 0.0:
+            if cols == 1:
+                # This is for non-azimuthal actuators
+                sigma_ref = a.extra_attributes.get('reference_direction', None)
+                if sigma_ref is None:
+                    sigma_ref = xi_ref / (np.linalg.norm(xi_ref) + toolbox.constants.EPSILON)
+                else:
+                    sigma_ref = np.array([sigma_ref])
 
-                    j_theta += \
-                        w * (
-                                xi_di.T / xi_desired_norm
-                                - self._lambda * sigma_ref.T
-                            ) @ self._q_matrix[i: i + cols]
+                j_theta += \
+                    w * (
+                            xi_di.T / (np.linalg.norm(xi_di) + toolbox.constants.EPSILON)
+                            - self._lambda * sigma_ref.T
+                        ) @ self._q_matrix[i: i + cols]
 
-                if cols == 2:
-                    # This is for azimuthal actuators
-                    a_ref = actuator.extra_attributes.get(
-                        'reference_angle', None)
-                    if a_ref == None:
-                        a_ref = xi_ref / (np.linalg.norm(xi_ref) + toolbox.constants.EPSILON)
-                    else:
-                        a_ref = np.array([np.cos(a_ref), np.sin(a_ref)])
+            if cols == 2:
+                # This is for azimuthal actuators
+                a_ref = a.extra_attributes.get('reference_angle', None)
+                if not a_ref:
+                    a_ref = xi_ref / (np.linalg.norm(xi_ref) + toolbox.constants.EPSILON)
+                else:
+                    a_ref = np.array([np.cos(a_ref), np.sin(a_ref)])
 
-                    j_theta += \
-                        w * (xi_di.T / np.linalg.norm(xi_di) -
-                             self._lambda * a_ref.T) @ self._q_matrix[i: i + cols]
+                j_theta += \
+                    w * (xi_di.T / np.linalg.norm(xi_di) -
+                            self._lambda * a_ref.T) @ self._q_matrix[i: i + cols]
 
             i += cols
 
@@ -193,11 +191,11 @@ class MinimumMagnitudeAndAzimuth(ReferenceFilterBase):
         v_theta = np.zeros_like(self._theta).T
 
         i = 0
-        for actuator in self._actuators:
-            _, cols = actuator.B.shape
+        for a in self._actuators:
+            _, cols = a.B.shape
 
             v_theta -= (
-                actuator.W[0]
+                a.W[0]
                 * xi_error[i: i + cols].T @ self._q_matrix[i: i + cols]
             )
 
