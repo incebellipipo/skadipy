@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License along with
 # skadipy. If not, see <https://www.gnu.org/licenses/>.
 #
-# Copyright (C) 2024 Emir Cem Gezer, NTNU
+# Copyright (C) 2026 Emir Cem Gezer, NTNU
 
 import numpy as np
 import typing

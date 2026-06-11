@@ -15,11 +15,12 @@
 # Copyright (C) 2024 Emir Cem Gezer, NTNU
 
 import numpy as np
-import scipy
 import typing
 
 from ._base import ReferenceFilterBase
-from ...safety import *
+from ...safety import (
+    ControlBarrierFunctionType,
+)
 from ... import allocator
 from ... import actuator
 from ... import toolbox
@@ -92,7 +93,7 @@ class MinimumMagnitude(ReferenceFilterBase):
 
         # Compute $\dot{xi}_p and use exponential smoothing
         # Check if it has been provided to the function
-        if type(d_tau) == type(None):
+        if d_tau is None:
             d_tau = self._derivative_solver(tau) / self._t_s
 
         # Compute the particular solution
@@ -138,12 +139,12 @@ class MinimumMagnitude(ReferenceFilterBase):
         j_theta = np.zeros_like(self._theta).T
 
         i = 0
-        for actuator in self._actuators:
+        for a in self._actuators:
 
             # Get the weight of the actuator. If it is not specified, use 1.0
-            w = actuator.extra_attributes.get('w', 1.0)
+            w = a.extra_attributes.get('w', 1.0)
 
-            _, cols = actuator.B.shape
+            _, cols = a.B.shape
 
             j_theta += self._theta.T @ (
                 w * self._q_matrix[i: i + cols].T @
@@ -168,11 +169,11 @@ class MinimumMagnitude(ReferenceFilterBase):
         v_theta = np.zeros_like(self._theta).T
 
         i = 0
-        for actuator in self._actuators:
-            _, cols = actuator.B.shape
+        for a in self._actuators:
+            _, cols = a.B.shape
 
             v_theta -= (
-                actuator.W[0]
+                a.W[0]
                 * xi_error[i: i + cols].T @ self._q_matrix[i: i + cols]
             )
 
